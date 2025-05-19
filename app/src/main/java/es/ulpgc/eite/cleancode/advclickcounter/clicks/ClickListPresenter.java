@@ -8,6 +8,7 @@ import es.ulpgc.eite.cleancode.advclickcounter.app.AppMediator;
 import es.ulpgc.eite.cleancode.advclickcounter.app.ClickToCounterState;
 import es.ulpgc.eite.cleancode.advclickcounter.app.CounterToClickState;
 import es.ulpgc.eite.cleancode.advclickcounter.data.ClickData;
+import es.ulpgc.eite.cleancode.advclickcounter.data.CounterData;
 
 public class ClickListPresenter implements ClickListContract.Presenter {
 
@@ -71,11 +72,15 @@ public class ClickListPresenter implements ClickListContract.Presenter {
 
   @Override
   public void onBackPressedCalled() {
-    Log.e(TAG, "onBackPressedCalled()");
+    Log.e(TAG, "onBackPressedCalled");
 
     // TODO: include code if necessary
-    ClickToCounterState newState = new ClickToCounterState(model.getStoredData());
+    CounterData updateCounter = model.getStoredData();
+    ClickToCounterState newState = new ClickToCounterState(updateCounter);
+
     passStateToPreviousScreen(newState);
+
+
 
 
   }

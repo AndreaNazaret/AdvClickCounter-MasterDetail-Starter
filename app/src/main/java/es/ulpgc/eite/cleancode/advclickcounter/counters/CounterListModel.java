@@ -27,10 +27,25 @@ public class CounterListModel implements CounterListContract.Model {
 
   @Override
   public void onRestartScreen(List<CounterData> counters) {
-    // Log.e(TAG, "onRestartScreen()");
+
 
     // TODO: include code if necessary
     this.counters = counters;
+
+    if(this.counters != null){
+      Log.e(TAG, "onRestartScreen - Starting sum for counters.");
+      for(CounterData counter : this.counters){
+        int sum=0;
+        if(counter.clicks != null){
+          for(ClickData click : counter.clicks){
+            Log.e(TAG, "Summing Click: " + click.value + " for Counter ID: " + counter.id);
+            sum += click.value;
+          }
+        }
+        Log.e(TAG, "Total Sum for Counter ID: " + counter.id + " is: " + sum);
+        counter.value= sum;
+      }
+    }
   }
 
   @Override

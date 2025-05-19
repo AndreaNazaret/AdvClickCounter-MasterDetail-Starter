@@ -6,6 +6,7 @@ import java.lang.ref.WeakReference;
 
 import es.ulpgc.eite.cleancode.advclickcounter.app.AppMediator;
 import es.ulpgc.eite.cleancode.advclickcounter.app.ClickToCounterState;
+import es.ulpgc.eite.cleancode.advclickcounter.data.ClickData;
 import es.ulpgc.eite.cleancode.advclickcounter.data.CounterData;
 import es.ulpgc.eite.cleancode.advclickcounter.app.CounterToClickState;
 
@@ -40,29 +41,67 @@ public class CounterListPresenter implements CounterListContract.Presenter {
     Log.e(TAG, "onRecreateCalled()");
 
     // get back the state
-    state = mediator.getCounterListState();
+    state.counters = mediator.getCounterListState().counters;
 
-    // update the model
-    // TODO: include code if necessary
-    model.onRestartScreen(state.counters);
+    if(state.counters != null){
+      for(CounterData counter : state.counters){
+        int sum = 0;
+        if(counter.clicks != null){
+          for(ClickData click : counter.clicks){
+            sum += click.value;
+          }
+        }
+        counter.value=sum;
+      }
+    }
+    state.counters=model.getStoredCounterList();
+
+    view.get().onDataUpdated(state);
   }
 
   @Override
   public void onResumeCalled() {
-    Log.e(TAG, "onResumeCalled()");
+    Log.e(TAG, "onResumeCalled - Checking received counters");
 
     // use passed state
     ClickToCounterState savedState = getStateFromNextScreen();
     if (savedState != null) {
-
+      Log.e(TAG, "Received counter from Clicks: ID = " + savedState.counter.id + ", Clicks = "
+              + (savedState.counter.clicks != null ? savedState.counter.clicks.size() : 0));
+      if (savedState.counter.clicks != null) {
+        for (ClickData click : savedState.counter.clicks) {
+          Log.e(TAG, "Click Value: " + click.value);
+        }
+      }
       // update the model
       // TODO: include code if necessary
       model.onDataFromNextScreen(savedState.counter);
+
+      if (state.counters != null) {
+        for (CounterData counter : state.counters) {
+          if (counter.id.equals(savedState.counter.id)) {
+            counter.clicks = savedState.counter.clicks;
+            break;
+          }
+        }
+      }
     }
+
+    state.counters=model.getStoredCounterList();
 
     // call the model and update the state
     // TODO: include code if necessary
-    state.counters=model.getStoredCounterList();
+    for (CounterData counter : state.counters) {
+      int sum = 0;
+      if (counter.clicks != null) {
+        for (ClickData click : counter.clicks) {
+          sum += click.value;
+        }
+      }
+      counter.value = sum;  // Actualiza el valor que se mostrará en la vista
+
+      Log.e(TAG, "Final Counter - ID: " + counter.id + ", Value (Sum): " + counter.value);
+    }
 
 
     // update the view
