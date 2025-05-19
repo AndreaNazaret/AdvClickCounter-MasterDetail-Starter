@@ -31,6 +31,8 @@ public class CounterListPresenter implements CounterListContract.Presenter {
     state = new CounterListState();
     // TODO: include code if necessary
 
+    state.counters= model.getStoredCounterList();
+
   }
 
   @Override
@@ -42,6 +44,7 @@ public class CounterListPresenter implements CounterListContract.Presenter {
 
     // update the model
     // TODO: include code if necessary
+    model.onRestartScreen(state.counters);
   }
 
   @Override
@@ -54,10 +57,13 @@ public class CounterListPresenter implements CounterListContract.Presenter {
 
       // update the model
       // TODO: include code if necessary
+      model.onDataFromNextScreen(savedState.counter);
     }
 
     // call the model and update the state
     // TODO: include code if necessary
+    state.counters=model.getStoredCounterList();
+
 
     // update the view
     view.get().onDataUpdated(state);
@@ -89,6 +95,11 @@ public class CounterListPresenter implements CounterListContract.Presenter {
     Log.e(TAG, "onClickListPressed()");
 
     // TODO: include code if necessary
+    CounterToClickState newState = new CounterToClickState(counter);
+    passStateToNextScreen(newState);
+    view.get().navigateToNextScreen();
+
+
   }
 
 
@@ -97,6 +108,13 @@ public class CounterListPresenter implements CounterListContract.Presenter {
     Log.e(TAG, "onCounterButtonPressed()");
 
     // TODO: include code if necessary
+    model.onAddCounter(new CounterData());
+    state.counters=model.getStoredCounterList();
+
+    CounterListViewModel viewModel = new CounterListViewModel();
+    viewModel.counters=state.counters;
+    view.get().onDataUpdated(viewModel);
+
   }
 
   private void passStateToNextScreen(CounterToClickState state) {

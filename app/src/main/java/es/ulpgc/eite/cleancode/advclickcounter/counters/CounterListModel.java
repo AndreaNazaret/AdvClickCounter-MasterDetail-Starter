@@ -30,12 +30,19 @@ public class CounterListModel implements CounterListContract.Model {
     // Log.e(TAG, "onRestartScreen()");
 
     // TODO: include code if necessary
+    this.counters = counters;
   }
 
   @Override
   public void onAddCounter(CounterData counter) {
 
     // TODO: include code if necessary
+    if (counter == null) {
+      counter = new CounterData();
+    }
+
+    counters.add(counter);
+
   }
 
   @Override
@@ -43,6 +50,14 @@ public class CounterListModel implements CounterListContract.Model {
     // Log.e(TAG, "onDataFromNextScreen()");
 
     // TODO: include code if necessary
-  }
+    if (counters != null && counter != null) {
+      for (CounterData item : counters) {
+        if (item.id.equals(counter.id)) {
+          item.value = counter.value;
+          break;
+        }
+      }
+    }
 
+  }
 }
