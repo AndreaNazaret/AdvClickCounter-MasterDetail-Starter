@@ -38,59 +38,53 @@ public class CounterListPresenter implements CounterListContract.Presenter {
 
   @Override
   public void onRecreateCalled() {
-    Log.e(TAG, "onRecreateCalled()");
+    Log.e(TAG, "onRecreateCalled - Recovering state after rotation");
 
-    // get back the state
-    state.counters = mediator.getCounterListState().counters;
+    state = mediator.getCounterListState();
 
-    if(state.counters != null){
-      for(CounterData counter : state.counters){
+
+    ClickToCounterState savedState = getStateFromNextScreen();
+    if (savedState != null && state.counters != null) {
+      for (CounterData counter : state.counters) {
+        if (counter.id.equals(savedState.counter.id)) {
+          counter.clicks = savedState.counter.clicks;
+          break;
+        }
+      }
+    }
+
+
+    if (state.counters != null) {
+      for (CounterData counter : state.counters) {
         int sum = 0;
-        if(counter.clicks != null){
-          for(ClickData click : counter.clicks){
+        if (counter.clicks != null) {
+          for (ClickData click : counter.clicks) {
             sum += click.value;
           }
         }
-        counter.value=sum;
+        counter.value = sum;
+
+        Log.e(TAG, "Counter ID: " + counter.id + ", Final Value (Sum): " + counter.value);
       }
     }
-    state.counters=model.getStoredCounterList();
 
     view.get().onDataUpdated(state);
   }
 
+
   @Override
   public void onResumeCalled() {
-    Log.e(TAG, "onResumeCalled - Checking received counters");
-
-    // use passed state
     ClickToCounterState savedState = getStateFromNextScreen();
-    if (savedState != null) {
-      Log.e(TAG, "Received counter from Clicks: ID = " + savedState.counter.id + ", Clicks = "
-              + (savedState.counter.clicks != null ? savedState.counter.clicks.size() : 0));
-      if (savedState.counter.clicks != null) {
-        for (ClickData click : savedState.counter.clicks) {
-          Log.e(TAG, "Click Value: " + click.value);
-        }
-      }
-      // update the model
-      // TODO: include code if necessary
-      model.onDataFromNextScreen(savedState.counter);
-
-      if (state.counters != null) {
-        for (CounterData counter : state.counters) {
-          if (counter.id.equals(savedState.counter.id)) {
-            counter.clicks = savedState.counter.clicks;
-            break;
-          }
+    if (savedState != null && state.counters != null) {
+      for (CounterData counter : state.counters) {
+        if (counter.id.equals(savedState.counter.id)) {
+          counter.clicks = savedState.counter.clicks;
+          break;
         }
       }
     }
 
-    state.counters=model.getStoredCounterList();
 
-    // call the model and update the state
-    // TODO: include code if necessary
     for (CounterData counter : state.counters) {
       int sum = 0;
       if (counter.clicks != null) {
@@ -98,16 +92,12 @@ public class CounterListPresenter implements CounterListContract.Presenter {
           sum += click.value;
         }
       }
-      counter.value = sum;  // Actualiza el valor que se mostrará en la vista
-
-      Log.e(TAG, "Final Counter - ID: " + counter.id + ", Value (Sum): " + counter.value);
+      counter.value = sum;
     }
 
-
-    // update the view
     view.get().onDataUpdated(state);
-
   }
+
 
   @Override
   public void onBackPressedCalled() {
