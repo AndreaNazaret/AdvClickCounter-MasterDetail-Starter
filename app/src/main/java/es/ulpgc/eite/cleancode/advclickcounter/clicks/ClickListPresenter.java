@@ -32,13 +32,15 @@ public class ClickListPresenter implements ClickListContract.Presenter {
     state = new ClickListState();
     // TODO: include code if necessary
 
+    state.counter=model.getStoredData();
+
     // use passed state
     CounterToClickState savedState = getStateFromPreviousScreen();
     if (savedState != null) {
 
       // update the model
       // TODO: include code if necessary
-
+      model.onDataFromPreviousScreen(savedState.counter);
     }
   }
 
@@ -51,6 +53,7 @@ public class ClickListPresenter implements ClickListContract.Presenter {
 
     // update the model
     // TODO: include code if necessary
+    model.onDataFromPreviousScreen(state.counter);
   }
 
   @Override
@@ -59,6 +62,7 @@ public class ClickListPresenter implements ClickListContract.Presenter {
 
     // call the model and update the state
     // TODO: include code if necessary
+    state.counter=model.getStoredData();
 
     // update the view
     view.get().onDataUpdated(state);
@@ -70,6 +74,10 @@ public class ClickListPresenter implements ClickListContract.Presenter {
     Log.e(TAG, "onBackPressedCalled()");
 
     // TODO: include code if necessary
+    ClickToCounterState newState = new ClickToCounterState(model.getStoredData());
+    passStateToPreviousScreen(newState);
+
+
   }
 
   @Override
@@ -91,6 +99,13 @@ public class ClickListPresenter implements ClickListContract.Presenter {
     // Log.e(TAG, "onClickListPressed()");
 
     // TODO: include code if necessary
+    model.onUpdateClick(click);
+    state.counter=model.getStoredData();
+
+    ClickListViewModel viewModel = new ClickListViewModel();
+    viewModel.counter=state.counter;
+
+    view.get().onDataUpdated(viewModel);
   }
 
   @Override
@@ -98,6 +113,13 @@ public class ClickListPresenter implements ClickListContract.Presenter {
     // Log.e(TAG, "onClickButtonPressed()");
 
     // TODO: include code if necessary
+    model.onAddClick(new ClickData());
+    state.counter=model.getStoredData();
+
+    ClickListViewModel viewModel = new ClickListViewModel();
+    viewModel.counter=state.counter;
+
+    view.get().onDataUpdated(viewModel);
   }
 
   private void passStateToPreviousScreen(ClickToCounterState state) {

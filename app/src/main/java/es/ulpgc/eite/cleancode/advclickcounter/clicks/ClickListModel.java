@@ -29,24 +29,39 @@ public class ClickListModel implements ClickListContract.Model {
     // Log.e(TAG, "onRestartScreen()");
 
     // TODO: include code if necessary
+    this.counter = counter;
   }
 
 
   @Override
   public void onDataFromPreviousScreen(CounterData counter) {
     // Log.e(TAG, "onDataFromPreviousScreen()");
-    this.counter=counter;
+    this.counter = counter;
   }
 
   @Override
   public void onAddClick(ClickData click) {
 
     // TODO: include code if necessary
+    if (click == null) {
+      counter.clicks = new ArrayList<>();
+    }
+    counter.clicks.add(click);
   }
 
   @Override
   public void onUpdateClick(ClickData click) {
 
-    // TODO: include code if necessary
+    if (counter.clicks != null && click != null) {
+      for (ClickData item : counter.clicks) {
+        if (item.id.equals(click.id)) {
+          item.value++;
+          break;
+        }
+      }
+
+      // TODO: include code if necessary
+
+    }
   }
 }
